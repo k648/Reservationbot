@@ -18,7 +18,7 @@ E. Check-Out Process
 F. Contact 
 G. FAQs
 H. Feedback
-I. Cancel
+I.  Cancel
 
 
 `;
