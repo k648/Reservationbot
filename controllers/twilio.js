@@ -16,7 +16,8 @@ E.  Check-Out Process
 F.  Contact
 G.  FAQs
 H.  Feedback
-I.  Cancel Reservation
+I.  Cancel
+
 `;
 
 const FAQ_OPTIONS = `
@@ -210,7 +211,7 @@ const whatsapp_Response = async (req, res) => {
 
       case 11: // User provides their name for feedback
         session.name = bodyLower; // Save user's feedback name
-        responseMessage = `Thank you, ${session.name}! Please enter your feedback comments.`;
+        responseMessage = `Thank you, ${session.name}! Please enter your feedback comment.`;
         session.step = 12; // Move to next step to get comment
         break;
 
