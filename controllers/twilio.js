@@ -205,7 +205,7 @@ const whatsapp_Response = async (req, res) => {
           });
           await reservation.save();
 
-          responseMessage = `Your reservation for ${session.suite} suite, from ${session.checkInDate} for ${session.nights} night(s) is confirmed! Thank you for choosing us!`;
+          responseMessage = `Your reservation for ${session.suite} , from ${session.checkInDate} for ${session.nights} night(s) is confirmed! Thank you for choosing us!`;
           delete sessions[From]; // Remove session after confirmation
         }
         break;
