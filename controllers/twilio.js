@@ -170,13 +170,13 @@ const whatsapp_Response = async (req, res) => {
       case 5: // User selects a suite
         switch (bodyLower) {
           case '1':
-            session.suite = 'Deluxe\nPrice for a night - N25000';
+            session.suite = 'Deluxe,\nPrice for a night - N25000';
             break;
           case '2':
-            session.suite = 'Presidential\nPrice for a night - N40000';
+            session.suite = 'Presidential,\nPrice for a night - N40000';
             break;
           case '3':
-            session.suite = 'Executive\nPrice for a night - N35000';
+            session.suite = 'Executive,\nPrice for a night - N35000';
             break;
           default:
             responseMessage = 'I didn’t understand that. Please select a valid suite option (1, 2, or 3).';
