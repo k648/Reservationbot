@@ -1,6 +1,6 @@
 const mongoose = require ('mongoose')
 
-const twilioDB = (url) => {
+const connectDB = (url) => {
    return  mongoose.connect(url,{
         //useNewurlParser: true,
         //useCreateIndex : true,
@@ -9,4 +9,4 @@ const twilioDB = (url) => {
     })}
 
 
-module.exports = twilioDB
+module.exports = connectDB
