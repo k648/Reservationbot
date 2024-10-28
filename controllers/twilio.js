@@ -155,7 +155,7 @@ const whatsapp_Response = async (req, res) => {
 
         if (isValidDate(bodyLower)) {
           const checkInDate = new Date(bodyLower);
-          if (checkInDate > new Date()) {
+          if (checkInDate >= new Date()) {
             session.checkInDate = bodyLower; // Save check-in date
             responseMessage = SUITE_OPTIONS; // Show suite options
             session.step = 5; // Move to the next step
