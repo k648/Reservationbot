@@ -155,17 +155,20 @@ const whatsapp_Response = async (req, res) => {
 
         if (isValidDate(bodyLower)) {
           const checkInDate = new Date(bodyLower);
-          if (checkInDate >= new Date()) {
-            session.checkInDate = bodyLower; // Save check-in date
-            responseMessage = SUITE_OPTIONS; // Show suite options
-            session.step = 5; // Move to the next step
+          const today = new Date();
+          today.setHours(0, 0, 0, 0); // Set time to the start of the day
+      
+          if (checkInDate >= today) {
+              session.checkInDate = bodyLower; // Save check-in date
+              responseMessage = SUITE_OPTIONS; // Show suite options
+              session.step = 5; // Move to the next step
           } else {
-            responseMessage = 'Please provide a check-in date that is in the future.';
+              responseMessage = 'Please provide a check-in date that is today or in the future.';
           }
-        } else {
+      } else {
           responseMessage = 'Please provide a valid check-in date in YYYY-MM-DD format.';
-        }
-        break;
+      }
+      
 
       case 5: // User selects a suite
         switch (bodyLower) {
