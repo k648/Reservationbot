@@ -8,19 +8,17 @@ const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_A
 const MENU_OPTIONS = `
 Hello, Welcome! How may I assist you today?
 
-Hello, Welcome! How may I assist you today?
+Sure! Here’s a formatted list:
 
-<ul>
-    <li>A. Room Reservations</li>
-    <li>B. View Amenities</li>
-    <li>C. Special Offers</li>
-    <li>D. Check-In Process</li>
-    <li>E. Check-Out Process</li>
-    <li>F. Contact</li>
-    <li>G. FAQs</li>
-    <li>H. Feedback</li>
-    <li>I. Cancel</li>
-</ul>
+A. Room Reservations 
+B. View Amenities  
+C. Special Offers  
+D. Check-In Process 
+E. Check-Out Process 
+F. Contact 
+G. FAQs
+H. Feedback
+I. Cancel
 
 
 `;
