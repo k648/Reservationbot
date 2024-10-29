@@ -57,7 +57,15 @@ const whatsapp_Response = async (req, res) => {
 
     const session = sessions[From];
     
-   
+      // Handle exit or cancel request first
+      if (bodyLower === 'cancel' || bodyLower === 'exit') {
+        cancelSession(From);
+        responseMessage = MENU_OPTIONS; // Provide the menu options after cancellation
+        return res.status(200).send({ message: responseMessage })
+      }
+  
+      session.history.push(bodyLower);
+      responseMessage = 'Please reply with "hi" to see the menu options.';
 
     switch (session.step) {
       case 0: // Initial greeting
@@ -268,15 +276,7 @@ const whatsapp_Response = async (req, res) => {
         break;
     }
 
-     // Handle exit or cancel request first
-     if (bodyLower === 'cancel' || bodyLower === 'exit') {
-      cancelSession(From);
-      responseMessage = MENU_OPTIONS; // Provide the menu options after cancellation
-      return res.status(200).send({ message: responseMessage })
-    }
-
-    session.history.push(bodyLower);
-    responseMessage = 'Please reply with "hi" to see the menu options.';
+  
 
     // Send response back to user
     await twilioClient.messages.create({
