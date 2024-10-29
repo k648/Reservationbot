@@ -53,7 +53,7 @@ const whatsapp_Response = async (req, res) => {
 
     // Initialize session if not exists
     if (!sessions[From]) {
-      sessions[From] = { step: 0 , history: []};
+      sessions[From] = { step: 0 };
     }
     const session = sessions[From];
 
@@ -64,8 +64,7 @@ const whatsapp_Response = async (req, res) => {
       responseMessage = MENU_OPTIONS; // Provide the menu options after cancellation
       return res.status(200).send({ message: responseMessage })
     }
-    session.history.push(bodyLower);
-    responseMessage = 'Please reply with "hi" to see the menu options.';
+  
 
     switch (session.step) {
       case 0: // Initial greeting
