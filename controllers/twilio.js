@@ -40,17 +40,32 @@ Please select a Suite:
 // In-memory sessions
 const sessions = {};
 
+function cancelSession(from) {
+  delete sessions[from];
+}
+
 const whatsapp_Response = async (req, res) => {
   try {
     const { Body, From } = req.body;
     const bodyLower = Body ? Body.toLowerCase().trim() : '';
     let responseMessage = '';
 
-    // Initialize session if not exists
-    if (!sessions[From]) {
-      sessions[From] = { step: 0 };
+     // Initialize session if it does not exist
+     if (!sessions[From]) {
+      sessions[From] = { step: 0, history: [] }; // Initialize with a step and a message history
     }
+
     const session = sessions[From];
+    
+    // Handle exit or cancel request first
+    if (bodyLower === 'cancel' || bodyLower === 'exit') {
+      cancelSession(From);
+      responseMessage = MENU_OPTIONS; // Provide the menu options after cancellation
+     return res.status(200).send({  responseMessage }); // Send response immediately
+    }
+
+    session.history.push(bodyLower);
+    responseMessage = 'Please reply with "hi" to see the menu options.';
 
     switch (session.step) {
       case 0: // Initial greeting
@@ -98,8 +113,8 @@ const whatsapp_Response = async (req, res) => {
             break;
           case 'i':
             responseMessage = 'Enter your name to cancel your reservation.';
-            session.step = 14; // Reset after providing info
-              break;
+            session.step = 14; // Move to cancellation step
+            break;
           default:
             responseMessage = 'I didn’t understand that. Please reply with "hi" to see the menu options again.';
             session.step = 0;
@@ -122,6 +137,7 @@ const whatsapp_Response = async (req, res) => {
             break;
           default:
             responseMessage = 'I didn’t understand that. Please select a valid FAQ option (1, 2, or 3).';
+            session.step = 0;
             break;
         }
         break;
@@ -145,7 +161,7 @@ const whatsapp_Response = async (req, res) => {
         } else {
           responseMessage = 'Please provide a valid phone number.';
         }
-        break; // Fixed to ensure step stays the same if invalid input
+        break;
 
       case 4: // User provides check-in date
         const isValidDate = (checkInDate) => {
@@ -165,10 +181,10 @@ const whatsapp_Response = async (req, res) => {
           } else {
               responseMessage = 'Please provide a check-in date that is today or in the future.';
           }
-      } else {
+        } else {
           responseMessage = 'Please provide a valid check-in date in YYYY-MM-DD format.';
-      }
-      break
+        }
+        break;
 
       case 5: // User selects a suite
         switch (bodyLower) {
@@ -208,7 +224,7 @@ const whatsapp_Response = async (req, res) => {
           });
           await reservation.save();
 
-          responseMessage = `Your reservation for ${session.suite} , from ${session.checkInDate} for ${session.nights} night(s) is confirmed! Thank you for choosing us!`;
+          responseMessage = `Your reservation for ${session.suite}, from ${session.checkInDate} for ${session.nights} night(s) is confirmed! Thank you for choosing us!`;
           delete sessions[From]; // Remove session after confirmation
         }
         break;
@@ -226,14 +242,8 @@ const whatsapp_Response = async (req, res) => {
         break;
 
       case 13: // User provides their phone number
-        const isValidatePhone = (phone) => {
-          const regex = /^\+?\d{1,3}[-.\s]?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}$/;
-          return regex.test(phone);
-        };
-
-        if (isValidatePhone(bodyLower)) {
+        if (isValidateMobile(bodyLower)) {
           session.phone = bodyLower; // Save user's phone number
- // Save user's phone number
           const feedback = new Feedback({
             name: session.name,
             comment: session.comment,
@@ -242,24 +252,24 @@ const whatsapp_Response = async (req, res) => {
           await feedback.save();
           responseMessage = 'We appreciate your feedback! Thank you!';
           delete sessions[From]; // Remove session after saving feedback
-          session.step = 0; // Reset session after feedback
         } else {
           responseMessage = 'Please provide a valid phone number.';
         }
         break; 
-      case 14:
-        session.name = bodyLower
-        const findUser = await Reservation.findOne({name: session.name})
-        if(findUser){
-          await Reservation.deleteOne({name : session.name})
-          responseMessage = 'Reservation cancelled successfully. Thanks for your patronage!'
-          delete sessions[From]; // Remove session after saving feedback
-          session.step = 0;
+
+      case 14: // Cancel reservation
+        session.name = bodyLower;
+        const findUser = await Reservation.findOne({ name: session.name });
+        if (findUser) {
+          await Reservation.deleteOne({ name: session.name });
+          responseMessage = 'Reservation cancelled successfully. Thanks for your patronage!';
+          delete sessions[From]; // Remove session after cancellation
         } else {
-           responseMessage = `No reservation exist for ${session.name} `
-           session.step = 0;
+           responseMessage = `No reservation exists for ${session.name}.`;
         }
+        session.step = 0; // Reset session
         break; 
+
       default:
         responseMessage = 'Session expired or invalid state. Please reply "hi" to restart.';
         session.step = 0; // Reset session
@@ -273,7 +283,7 @@ const whatsapp_Response = async (req, res) => {
     });
 
 
-   // res.send(`<Response><Message>${responseMessage}</Message></Response>`); // Twilio requires a response
+   //res.send(`<Response><Message>${responseMessage}</Message></Response>`); // Twilio requires a response
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
