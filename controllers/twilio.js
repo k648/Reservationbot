@@ -61,7 +61,7 @@ const whatsapp_Response = async (req, res) => {
     if (bodyLower === 'cancel' || bodyLower === 'exit') {
       cancelSession(From);
       responseMessage = MENU_OPTIONS; // Provide the menu options after cancellation
-     return res.status(200).send({  responseMessage }); // Send response immediately
+     return res.status(200).send({ msg: responseMessage }); // Send response immediately
     }
 
     session.history.push(bodyLower);
