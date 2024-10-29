@@ -53,7 +53,7 @@ const whatsapp_Response = async (req, res) => {
 
     // Initialize session if not exists
     if (!sessions[From]) {
-      sessions[From] = { step: 0 };
+      sessions[From] = { step: 0 , history: []};
     }
     const session = sessions[From];
 
@@ -61,9 +61,11 @@ const whatsapp_Response = async (req, res) => {
      // Handle exit or cancel request first
      if (bodyLower === 'cancel' || bodyLower === 'exit') {
       cancelSession(From);
-     return responseMessage = MENU_OPTIONS; // Provide the menu options after cancellation
-      //return res.status(200).send({ message: responseMessage })
+      responseMessage = MENU_OPTIONS; // Provide the menu options after cancellation
+      return res.status(200).send({ message: responseMessage })
     }
+    session.history.push(bodyLower);
+    responseMessage = 'Please reply with "hi" to see the menu options.';
 
     switch (session.step) {
       case 0: // Initial greeting
@@ -286,7 +288,7 @@ const whatsapp_Response = async (req, res) => {
     });
 
 
-   // res.send(`<Response><Message>${responseMessage}</Message></Response>`); // Twilio requires a response
+   res.send(`<Response><Message>${responseMessage}</Message></Response>`); // Twilio requires a response
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
