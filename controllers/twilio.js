@@ -1,7 +1,7 @@
 const twilio = require('twilio');
 const Feedback = require('../model/feedback');
 const Reservation = require('../model/reservation'); // Assuming you have a model for room reservations
-
+const CancelledReservation = require('../model/cancelledReservation')
 
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
@@ -271,16 +271,23 @@ I.  Cancel Reservation
         break; 
       case 14:
         session.name = Body
-        const findUser = await Reservation.findOne({name: session.name})
-        if(findUser){
-          await Reservation.deleteOne({name : session.name})
-          responseMessage = 'Reservation cancelled successfully. Thanks for your patronage!'
-          delete sessions[From]; // Remove session after saving feedback
-          session.step = 0;
-        } else {
-           responseMessage = `No reservation exist for ${session.name} `
-           session.step = 0;
-        }
+        const findUser = await Reservation.findOne({ name: session.name });
+
+  if (findUser) {
+    // Delete the reservation
+    await Reservation.deleteOne({ name: session.name });
+
+    // Create a new cancelled reservation
+    await CancelledReservation.create(findUser.toObject());
+
+    responseMessage = 'Reservation cancelled successfully. Thanks for your patronage!';
+    delete sessions[From]; // Remove session after saving feedback
+    session.step = 0;
+  } else {
+    responseMessage = `No reservation exists for ${session.name}`;
+    session.step = 0;
+  }
+        
         break; 
       default:
         responseMessage = 'Session expired or invalid state. Please reply "hi" to restart.';
