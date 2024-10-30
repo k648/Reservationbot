@@ -270,7 +270,7 @@ I.  Cancel Reservation
         }
         break; 
       case 14:
-        session.name = bodyLower
+        session.name = Body
         const findUser = await Reservation.findOne({name: session.name})
         if(findUser){
           await Reservation.deleteOne({name : session.name})
