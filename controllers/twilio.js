@@ -295,7 +295,7 @@ I.  Cancel Reservation
     });
 
 
-  res.send(`<Response><Message>${responseMessage}</Message></Response>`); // Twilio requires a response
+  //res.send(`<Response><Message>${responseMessage}</Message></Response>`); // Twilio requires a response
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
