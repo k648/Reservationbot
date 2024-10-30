@@ -5,21 +5,8 @@ const Reservation = require('../model/reservation'); // Assuming you have a mode
 
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
-const MENU_OPTIONS = `
-Hello, Welcome! How may I assist you today?
-
-A. Room Reservations 
-B. View Amenities  
-C. Special Offers  
-D. Check-In Process 
-E. Check-Out Process 
-F. Contact 
-G. FAQs
-H. Feedback
-I.  Cancel Reservation
 
 
-`;
 
 const FAQ_OPTIONS = `
 Please select a FAQ:
@@ -45,9 +32,30 @@ function cancelSession(from) {
 }
 
 
+
+
 const whatsapp_Response = async (req, res) => {
+
+  const userName = req.body.ProfileName || 'User'
+
+  
+const MENU_OPTIONS = `
+Hello, ${userName} Welcome! How may I assist you today?
+
+A. Room Reservations 
+B. View Amenities  
+C. Special Offers  
+D. Check-In Process 
+E. Check-Out Process 
+F. Contact 
+G. FAQs
+H. Feedback
+I.  Cancel Reservation
+
+`;
+
   try {
-    const { Body, From } = req.body;
+    const { Body, From  } = req.body;
     const bodyLower = Body ? Body.toLowerCase().trim() : '';
     let responseMessage = '';
 
@@ -141,7 +149,7 @@ const whatsapp_Response = async (req, res) => {
         break;
 
       case 2: // User provides their name
-        session.name = bodyLower; // Save user's name
+        session.name = Body; // Save user's name
         responseMessage = `Thank you, ${session.name}! Please provide your phone number.`;
         session.step = 3; // Move to the next step
         break;
@@ -228,7 +236,7 @@ const whatsapp_Response = async (req, res) => {
         break;
 
       case 11: // User provides their name for feedback
-        session.name = bodyLower; // Save user's feedback name
+        session.name = Body; // Save user's feedback name
         responseMessage = `Thank you, ${session.name}! Please enter your feedback comment.`;
         session.step = 12; // Move to next step to get comment
         break;
@@ -287,7 +295,7 @@ const whatsapp_Response = async (req, res) => {
     });
 
 
-  // res.send(`<Response><Message>${responseMessage}</Message></Response>`); // Twilio requires a response
+  res.send(`<Response><Message>${responseMessage}</Message></Response>`); // Twilio requires a response
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
