@@ -284,7 +284,7 @@ I.  Cancel Reservation
     delete sessions[From]; // Remove session after saving feedback
     session.step = 0;
   } else {
-    responseMessage = `No reservation exists for ${session.name}`;
+    responseMessage = `No reservation exist for ${session.name}`;
     session.step = 0;
   }
         
