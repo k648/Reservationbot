@@ -40,7 +40,9 @@ const whatsapp_Response = async (req, res) => {
 
   
 const MENU_OPTIONS = `
-Hello, ${userName} Welcome! How may I assist you today?
+Hello, ${userName}. Welcome! 
+
+How may I assist you today?
 
 A. Room Reservations 
 B. View Amenities  
